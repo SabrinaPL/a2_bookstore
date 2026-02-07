@@ -8,7 +8,7 @@
         <li><a href="./users/register" class="button">Register</a></li>
         <% } %>
         <% if (user) { %>
-        <li><a href="./users/logout" class="button">Logout</a></li>
+        <li><a href="./users/logout" class="button">Logout [<%= user.firstName %> <%= user.lastName %>]</a></li>
         <% } else { %>
         <li><a href="./users/login" class="button">Login</a></li>
         <% } %>

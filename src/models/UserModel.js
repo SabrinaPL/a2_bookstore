@@ -70,12 +70,12 @@ export class UserModel {
     return {
       id: user.id,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: user.fname,
+      lastName: user.lname,
       address: user.address,
       city: user.city,
-      zipCode: user.zipCode,
-      phoneNumber: user.phoneNumber
+      zipCode: user.zip,
+      phoneNumber: user.phone
     }
   }
 }
