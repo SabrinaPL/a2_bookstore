@@ -1,0 +1,28 @@
+<h1>Snippets</h1>
+<p>
+    Here you can view snippets that have been created by our users (newest-oldest)
+</p>
+
+<div class="my-snippets-container">
+    <% if (viewData?.snippets?.length) { %>
+        <% for (const snippet of viewData.snippets) { %>
+            <div class="my-snippet">
+                <div class="code-snippet-container">
+                <pre><code><%= snippet.description %></code></pre>
+                </div>
+                <div class="username">
+                    <p>Created by <strong><%= snippet.user.username %></strong> on <%= snippet.createdAt.toDateString() %></p>
+                </div>
+                <% if (snippet && user && user._id === snippet.user.id) { %>
+                <div class="update-delete-text">
+                    <a href="./snippets/<%= snippet.id %>/update">Update</a>
+                    <a href="./snippets/<%= snippet.id %>/delete">Delete</a>
+                </div>
+                <% } %>
+            </div>
+
+            <% } %>
+                <% } else { %>
+                    <p class="text-center text-danger">There are no snippets to display</p>
+                    <% } %>
+</div>

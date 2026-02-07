@@ -1,0 +1,9 @@
+<h1>Update Snippet</h1>
+
+<form class="snippet-update" method="post" action="./snippets/<%= viewData?.id %>/update">
+    <label for="snippet-code-text-box">
+        My updated snippet:
+    </label><br>
+    <textarea rows="5" cols="50" class="snippet-code-text-box" id="descriptionInput" name="description" value="<%= viewData?.id %> placeholder="Update snippet here" required autofocus /><%= viewData?.description %></textarea><br>
+        <button type="submit" class="crud-btn">Update</button>
+</form>

@@ -1,0 +1,149 @@
+@font-face {
+    font-family: 'Protest Riot';
+    src: url('../fonts/Protest_Riot/ProtestRiot-Regular.ttf')
+}
+
+h1 {
+    color: green;
+    font-family: 'Protest Riot', Arial, sans-serif;
+}
+
+body {
+    background-color: #EAEAEA;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  nav {
+    background-color: #EAEAEA;
+    text-align: right;
+  }
+
+  .button, .filter-snippets-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.15rem;
+    border: 0.1rem solid #ccc;
+    border-radius: 0.5rem;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0.5rem;
+  }
+
+  .filter-snippets-btn:hover {
+    background-color: darkseagreen;
+  }
+
+  .password-ux-default {
+    visibility: hidden; 
+  }
+
+  .password-ux-red {
+    border-top: 0.5rem solid red;
+    width: 20%;
+  }
+
+  .password-ux-yellow {
+    border-top: 0.5rem solid yellow;
+    width: 20%;
+  }
+
+  .password-ux-green {
+    border-top: 0.5rem solid green;
+    width: 20%;
+  }
+
+  .username {
+    font-size: 1.1rem;
+    margin-left: 2rem;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 2rem;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 0.5rem;
+  }
+
+  a {
+    text-decoration: none;
+    color: #00120B;
+  }
+
+  a:hover {
+    text-decoration: underline red;
+    color: #00120B;
+  }
+
+  /* Code snippet container styling, as suggested by chatGPT */
+  .code-snippet-container {
+    font-size: 1.35rem;
+    color: greenyellow;
+    background-color: #00120B;
+    max-width: max-content;
+    margin: 2rem;
+    padding: 0.5rem;
+    border: transparent;
+    border-radius: 8px;
+    overflow: auto;
+  }
+
+  .my-snippets-container {
+    display: flex; 
+    flex-direction: column-reverse;  
+    flex-wrap: wrap; 
+    justify-content: space-evenly;  
+    margin: 1.5rem;
+  }
+
+  .update-delete-text {
+    text-align: left;
+    margin: 2rem; 
+  }
+
+  .snippet-code-text-box {
+    background-color: black; 
+    color: greenyellow;
+    border: 0.1rem solid black;
+    border-radius: 0.5rem;
+    padding: 1rem; 
+  }
+
+  pre {
+    padding: 1.2rem;
+  }
+
+  .crud-btn {
+    font-size: 1.15rem;
+    border: 0.1rem solid #ccc;
+    border-radius: 0.5rem;
+    background-color: #f0f0f0;
+    padding: 0.5rem 1rem;
+    color: #333;
+    margin-top: 1rem;
+  }
+
+  .delete-warning-text {
+    margin-top: 1rem; 
+  }
+
+  .delete-btn {
+    background-color: red; 
+    color: white;
+    border: 0.1rem solid red;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+
+  footer {
+    text-align: right;
+  }
+  
+
+  

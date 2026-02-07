@@ -1,0 +1,16 @@
+<nav>
+    <ul>
+        <li><a href="./">Home</a></li>
+        <li><a href="./snippets">Our books</a></li>
+        <% if (user) { %>
+        <li><a href="./snippets/create">Create Snippet</a></li>
+        <% } else { %>
+        <li><a href="./users/register" class="button">Register</a></li>
+        <% } %>
+        <% if (user) { %>
+        <li><a href="./users/logout" class="button">Logout</a></li>
+        <% } else { %>
+        <li><a href="./users/login" class="button">Login</a></li>
+        <% } %>
+    </ul>
+</nav>

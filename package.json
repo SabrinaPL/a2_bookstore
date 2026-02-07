@@ -1,0 +1,42 @@
+{
+  "name": "assignment-b1-crud-snippets",
+  "version": "1.0.0",
+  "description": "In this assignment, you will create a web application to manage code [snippets](https://en.wikipedia.org/wiki/Snippet_(programming)). The web application will use the Node.js platform, Express as the application framework, and Mongoose as the object data modeling (ODM) library for MongoDB.",
+  "main": "server.js",
+  "type": "module",
+  "eslintConfig": {
+    "extends": "@lnu"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --inspect --env-file=.env src/server.js",
+    "lint": "npx eslint ./src || exit 0",
+    "lint:fix": "npx eslint ./src --fix || exit 0"
+  },
+  "keywords": [],
+  "author": "Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.2",
+    "date-fns": "^3.3.1",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "http-errors": "^2.0.0",
+    "mongoose": "^8.1.1",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.16.3",
+    "validator": "^13.15.26"
+  },
+  "devDependencies": {
+    "@lnu/eslint-config": "^1.1.10",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.3"
+  }
+}
