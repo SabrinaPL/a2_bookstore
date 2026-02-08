@@ -1,28 +1,76 @@
-<h1>Snippets</h1>
-<p>
-    Here you can view snippets that have been created by our users (newest-oldest)
-</p>
+<h1>Our Books</h1>
 
-<div class="my-snippets-container">
-    <% if (viewData?.snippets?.length) { %>
-        <% for (const snippet of viewData.snippets) { %>
-            <div class="my-snippet">
-                <div class="code-snippet-container">
-                <pre><code><%= snippet.description %></code></pre>
-                </div>
-                <div class="username">
-                    <p>Created by <strong><%= snippet.user.username %></strong> on <%= snippet.createdAt.toDateString() %></p>
-                </div>
-                <% if (snippet && user && user._id === snippet.user.id) { %>
-                <div class="update-delete-text">
-                    <a href="./snippets/<%= snippet.id %>/update">Update</a>
-                    <a href="./snippets/<%= snippet.id %>/delete">Delete</a>
-                </div>
-                <% } %>
-            </div>
+<div class="search-filters">
+    <form action="./books" method="get">
+        <!-- Filter by Subject -->
+        <div class="filter-section">
+            <label for="subject">Select subject:</label><br>
+            <input type="text" id="subject" name="subject" placeholder="Enter subject" value="<%= viewData?.filters?.subject || '' %>">
+        </div>
 
-            <% } %>
-                <% } else { %>
-                    <p class="text-center text-danger">There are no snippets to display</p>
-                    <% } %>
+        <!-- Search by Author -->
+        <div class="filter-section">
+            <label for="author">Search by Author:</label><br>
+            <input type="text" id="author" name="author" placeholder="Enter author name" value="<%= viewData?.filters?.author || '' %>">
+        </div>
+
+        <!-- Search by Title -->
+        <div class="filter-section">
+            <label for="title">Search by Title:</label><br>
+            <input type="text" id="title" name="title" placeholder="Enter book title" value="<%= viewData?.filters?.title || '' %>">
+        </div>
+
+        <button type="submit" class="crud-btn">Search Books</button>
+    </form>
 </div>
+
+<!-- Items per page -->
+<div class="items-per-page">
+    <br>
+    <h3>Items per page</h3>
+    <% 
+    const perPageOptions = [2, 3, 5, 10, 20];
+    const currentPerPage = viewData?.perPage || 5;
+    const queryParams = new URLSearchParams();
+    if (viewData?.filters?.subject) queryParams.set('subject', viewData.filters.subject);
+    if (viewData?.filters?.author) queryParams.set('author', viewData.filters.author);
+    if (viewData?.filters?.title) queryParams.set('title', viewData.filters.title);
+    %>
+    <% for (const option of perPageOptions) { %>
+        <% queryParams.set('perPage', option); %>
+        <a href="?<%= queryParams.toString() %>" class="<%= currentPerPage === option ? 'active' : '' %>"><%= option %></a>
+    <% } %>
+</div>
+
+<!-- Books Display -->
+<div class="books-container">
+    <br>
+    <h2>Books</h2>
+    
+    <% if (viewData?.books?.length) { %>
+        <% for (const book of viewData.books) { %>
+            <div class="book-box">
+                <h3><%= book.title %></h3>
+                <p><strong>Author:</strong> <%= book.author %></p>
+                <p><strong>ISBN:</strong> <%= book.isbn %></p>
+                <p><strong>Price:</strong> $<%= book.price %></p>
+                <p><strong>Subject:</strong> <%= book.subject %></p>
+                
+                <form action="./cart/add" method="post" class="add-to-cart-form">
+                    <input type="hidden" name="bookId" value="<%= book.id %>">
+                    <label for="quantity-<%= book.id %>">Quantity:</label>
+                    <input type="number" id="quantity-<%= book.id %>" name="quantity" min="1" value="1">
+                    <button type="submit" class="crud-btn">Add to Cart</button>
+                </form>
+            </div>
+        <% } %>
+    <% } else { %>
+        <% if (viewData?.filters?.subject || viewData?.filters?.author || viewData?.filters?.title) { %>
+            <p class="no-books">No books found matching your search criteria. Please try different filters.</p>
+        <% } else { %>
+            <p class="no-books">No books available to display.</p>
+        <% } %>
+    <% } %>
+</div>
+
+<!-- TODO: Add pagination section here -->

@@ -154,7 +154,7 @@ export class UserController {
           req.session.flash = { type: 'success', text: 'You are now logged in.' }
           req.session.user = user
 
-          return res.redirect('/')
+          return res.redirect('/books/')
         })
       } else {
         req.session.flash = { type: 'danger', text: 'You are already logged in.' }
