@@ -38,15 +38,13 @@
     %>
     <% for (const option of perPageOptions) { %>
         <% queryParams.set('perPage', option); %>
-        <a href="?<%= queryParams.toString() %>" class="<%= currentPerPage === option ? 'active' : '' %>"><%= option %></a>
+        <a href="/books?<%= queryParams.toString() %>" class="per-page-link <%= currentPerPage === option ? 'active' : '' %>"><%= option %></a>
     <% } %>
 </div>
 
 <!-- Books Display -->
+<h2>Books</h2>
 <div class="books-container">
-    <br>
-    <h2>Books</h2>
-    
     <% if (viewData?.books?.length) { %>
         <% for (const book of viewData.books) { %>
             <div class="book-box">
@@ -73,4 +71,49 @@
     <% } %>
 </div>
 
-<!-- TODO: Add pagination section here -->
+<% 
+const totalPages = viewData?.totalPages || 1;
+const currentPage = viewData?.currentPage || 1;
+const maxPageLinks = 5;
+
+const pageQuery = new URLSearchParams();
+if (viewData?.filters?.subject) pageQuery.set('subject', viewData.filters.subject);
+if (viewData?.filters?.author) pageQuery.set('author', viewData.filters.author);
+if (viewData?.filters?.title) pageQuery.set('title', viewData.filters.title);
+if (viewData?.perPage) pageQuery.set('perPage', viewData.perPage);
+
+const buildPageUrl = (pageNum) => {
+    pageQuery.set('page', pageNum);
+    return `/books?${pageQuery.toString()}`;
+};
+
+const pageItems = [];
+
+if (totalPages <= maxPageLinks) {
+    for (let p = 1; p <= totalPages; p++) pageItems.push(p);
+} else {
+    pageItems.push(1);
+    const windowSize = 1;
+    let start = Math.max(2, currentPage - windowSize);
+    let end = Math.min(totalPages - 1, currentPage + windowSize);
+
+    if (start > 2) pageItems.push('ellipsis');
+    for (let p = start; p <= end; p++) pageItems.push(p);
+    if (end < totalPages - 1) pageItems.push('ellipsis');
+    pageItems.push(totalPages);
+}
+%>
+
+<% if (totalPages > 1) { %>
+<div class="pagination-controls">
+    <a class="pagination-link <%= currentPage === 1 ? 'disabled' : '' %>" href="<%= currentPage === 1 ? '#' : buildPageUrl(currentPage - 1) %>">Previous</a>
+    <% pageItems.forEach((item) => { %>
+        <% if (item === 'ellipsis') { %>
+            <span class="pagination-ellipsis">...</span>
+        <% } else { %>
+            <a class="pagination-link <%= currentPage === item ? 'active' : '' %>" href="<%= buildPageUrl(item) %>"><%= item %></a>
+        <% } %>
+    <% }) %>
+    <a class="pagination-link <%= currentPage === totalPages ? 'disabled' : '' %>" href="<%= currentPage === totalPages ? '#' : buildPageUrl(currentPage + 1) %>">Next</a>
+</div>
+<% } %>

@@ -1,8 +1,9 @@
 /**
  * @file Defines the book store router.
  * @module bookStoreRouter
- * @author Mats Loock & Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
+ * @author Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
  */
+
 // src/routes/bookStoreRouter.js
 import express from 'express'
 import { BookStoreController } from '../controllers/BookStoreController.js'

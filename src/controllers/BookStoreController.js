@@ -1,13 +1,13 @@
 /**
  * @file Defines the BookStoreController class.
  * @module BookStoreController
- * @author Mats Loock & Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
+ * @author Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
  */
 
 import { BookModel } from '../models/BookModel.js'
 
 /**
- * Encapsulates a controller.
+ * Book Store controller for handling book-related logic and interactions between the model and views.
  */
 export class BookStoreController {
   /**

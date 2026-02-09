@@ -1,7 +1,7 @@
 /**
  * @file Defines the router class.
  * @module router
- * @author Mats Loock & Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
+ * @author Mats Loock (from the Just Task It-template in the course 1DV026) & Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
  */
 
 import express from 'express'

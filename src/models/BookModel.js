@@ -31,10 +31,10 @@ export class BookModel {
       params.push(`%${filters.subject}%`)
     }
 
-    // Author: Search by first name starting with entered string (case-insensitive)
+    // Author: Search by any part of the name (case-insensitive)
     if (filters.author) {
       query += ' AND LOWER(author) LIKE LOWER(?)'
-      params.push(`${filters.author}%`)
+      params.push(`%${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)
@@ -70,10 +70,10 @@ export class BookModel {
       params.push(`%${filters.subject}%`)
     }
 
-    // Author: Search by first name starting with entered string (case-insensitive)
+    // Author: Search by any part of the name (case-insensitive)
     if (filters.author) {
       query += ' AND LOWER(author) LIKE LOWER(?)'
-      params.push(`${filters.author}%`)
+      params.push(`%${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)

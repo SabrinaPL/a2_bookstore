@@ -66,6 +66,89 @@
     margin-top: 1rem;
   }
 
+  .items-per-page {
+    margin-bottom: 1.5rem;
+  }
+
+  .per-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.35rem 0.6rem;
+    margin: 0.25rem 0.4rem 0 0;
+    border: 0.1rem solid #cfcfcf;
+    border-radius: 0.5rem;
+    background-color: #f7f7f7;
+    color: #333;
+  }
+
+  .per-page-link.active {
+    background-color: #dfeee0;
+    border-color: #9cc19f;
+    font-weight: 600;
+  }
+
+  .books-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  .book-box {
+    background-color: #ffffff;
+    border: 0.1rem solid #d5d5d5;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+    flex: 1 1 240px;
+    max-width: 360px;
+  }
+
+  .book-box h3 {
+    margin-top: 0;
+  }
+
+  .pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 1.5rem 0 2rem;
+  }
+
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.35rem 0.7rem;
+    border: 0.1rem solid #cfcfcf;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    color: #333;
+  }
+
+  .pagination-link.active {
+    background-color: #dfeee0;
+    border-color: #9cc19f;
+    font-weight: 600;
+  }
+
+  .pagination-link.disabled {
+    color: #9a9a9a;
+    border-color: #e0e0e0;
+    background-color: #f6f6f6;
+    pointer-events: none;
+  }
+
+  .pagination-ellipsis {
+    padding: 0 0.25rem;
+    color: #666;
+  }
+
   .username {
     font-size: 1.1rem;
     margin-left: 2rem;

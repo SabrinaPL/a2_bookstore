@@ -1,7 +1,7 @@
 /**
  * @file Defines the homeRouter class.
  * @module homeRouter
- * @author Mats Loock
+ * @author Mats Loock (from the Just Task It-template in the course 1DV026)
  */
 
 import express from 'express'

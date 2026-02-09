@@ -1,7 +1,7 @@
 /**
  * @file Defines the HomeController class.
  * @module HomeController
- * @author Mats Loock
+ * @author Mats Loock (from the Just Task It-template in the course 1DV026)
  */
 
 import { format } from 'date-fns'
