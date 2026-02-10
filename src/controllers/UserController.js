@@ -200,8 +200,9 @@ export class UserController {
   static authenticateUser (req, res, next) {
     try {
       if (!req.session.user) {
-        const error = createHTTPError(404)
-        throw error
+        req.session.flash = { type: 'danger', text: 'Please log in to continue.' }
+
+        return res.redirect('/users/login')
       } else {
         next()
       }

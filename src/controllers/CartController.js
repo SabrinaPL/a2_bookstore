@@ -20,6 +20,21 @@ export class CartController {
   }
 
   /**
+   * Displays the user's cart (placeholder until a UI is implemented).
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async index (req, res, next) {
+    try {
+      res.status(200).send('Cart view not implemented yet.')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
    * Adds a book to the user's shopping cart.
    *
    * @param {object} req - Express request object.

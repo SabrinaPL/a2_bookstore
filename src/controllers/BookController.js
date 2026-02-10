@@ -7,13 +7,13 @@
 import { BookModel } from '../models/BookModel.js'
 
 /**
- * BookStoreController class to manage book store operations.
+ * BookController class to manage book operations.
  */
-export class BookStoreController {
+export class BookController {
   #bookModel
 
   /**
-   * Initializes the BookStoreController with a new instance of the BookModel.
+   * Initializes the BookController with a new instance of the BookModel.
    */
   constructor () {
     this.#bookModel = new BookModel()

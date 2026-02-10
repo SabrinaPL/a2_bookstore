@@ -16,6 +16,7 @@ export const router = express.Router()
 router.use('/', homeRouter)
 router.use('/books/', bookStoreRouter)
 router.use('/users/', userRouter)
+router.get('/cart', (req, res) => res.redirect('/books/cart'))
 
 // Catch 404 and forward to error handler.
 router.use('*', (req, res, next) => {

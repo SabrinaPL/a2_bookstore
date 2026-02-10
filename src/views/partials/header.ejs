@@ -2,7 +2,9 @@
     <ul>
         <li><a href="./">Home</a></li>
         <li><a href="./books">Our books</a></li>
+        <% if (user) { %>
         <li><a href="./cart">🛒 Cart</a></li>
+        <% } %>
         <% if (!user) { %>
         <li><a href="./users/register" class="button">Register</a></li>
         <% } %>

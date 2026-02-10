@@ -6,20 +6,29 @@
 
 // src/routes/bookStoreRouter.js
 import express from 'express'
-import { BookStoreController } from '../controllers/BookStoreController.js'
+import { BookController } from '../controllers/BookController.js'
 import { CartController } from '../controllers/CartController.js'
+import { UserController } from '../controllers/UserController.js'
+// import { OrderController } from '../controllers/OrderController.js'
 
 export const router = express.Router()
 
-const bookStoreController = new BookStoreController()
+const bookController = new BookController()
 const cartController = new CartController()
 
 // Provide req.doc to the route if :id is present in the route path.
 // router.param('id', (req, res, next, id) => controller.loadSnippetDocument(req, res, next, id))
 
-// Map HTTP verbs and route paths to controller action methods.
-router.get('/', (req, res, next) => bookStoreController.index(req, res, next))
-router.post('/cart', (req, res, next) => cartController.add(req, res, next))
+// Route for listing all books in the store
+router.get('/', (req, res, next) => bookController.index(req, res, next))
+
+// Cart routes for adding, updating, and deleting items in the cart
+router.route('/cart')
+  .all(UserController.authenticateUser)
+  .get((req, res, next) => cartController.index(req, res, next))
+  .post((req, res, next) => cartController.add(req, res, next))
+  .put((req, res, next) => cartController.update(req, res, next))
+  .delete((req, res, next) => cartController.delete(req, res, next))
 
 // Route for creating new snippets should only be available for authenticated users.
 // Code pattern as recommended by Mats.
