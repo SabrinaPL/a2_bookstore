@@ -7,9 +7,18 @@
 import { BookModel } from '../models/BookModel.js'
 
 /**
- * Book Store controller for handling book-related logic and interactions between the model and views.
+ * BookStoreController class to manage book store operations.
  */
 export class BookStoreController {
+  #bookModel
+
+  /**
+   * Initializes the BookStoreController with a new instance of the BookModel.
+   */
+  constructor () {
+    this.#bookModel = new BookModel()
+  }
+
   /**
    * Displays a list of all books.
    *
@@ -32,8 +41,8 @@ export class BookStoreController {
       const offset = (page - 1) * perPage
 
       // Fetch books from database using OFFSET and LIMIT
-      const books = await BookModel.search(filters, perPage, offset)
-      const totalBooks = await BookModel.count(filters)
+      const books = await this.#bookModel.search(filters, perPage, offset)
+      const totalBooks = await this.#bookModel.count(filters)
       const totalPages = Math.ceil(totalBooks / perPage) || 1
 
       const viewData = {

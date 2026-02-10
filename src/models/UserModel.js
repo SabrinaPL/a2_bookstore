@@ -39,7 +39,7 @@ export class UserModel {
   static async create (userData) {
     const { email, password, firstName, lastName, address, city, zipCode, phoneNumber } = userData
 
-    // Hash the password before storing
+    // Hash and salt the password before storing
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Insert the new member into the database
@@ -68,7 +68,7 @@ export class UserModel {
 
     // Return user object without password
     return {
-      id: user.id,
+      id: user.userid,
       email: user.email,
       firstName: user.fname,
       lastName: user.lname,

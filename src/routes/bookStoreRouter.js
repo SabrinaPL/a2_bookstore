@@ -7,17 +7,19 @@
 // src/routes/bookStoreRouter.js
 import express from 'express'
 import { BookStoreController } from '../controllers/BookStoreController.js'
-// import { UserController } from '../controllers/UserController.js'
+import { CartController } from '../controllers/CartController.js'
 
 export const router = express.Router()
 
-const controller = new BookStoreController()
+const bookStoreController = new BookStoreController()
+const cartController = new CartController()
 
 // Provide req.doc to the route if :id is present in the route path.
 // router.param('id', (req, res, next, id) => controller.loadSnippetDocument(req, res, next, id))
 
 // Map HTTP verbs and route paths to controller action methods.
-router.get('/', (req, res, next) => controller.index(req, res, next))
+router.get('/', (req, res, next) => bookStoreController.index(req, res, next))
+router.post('/cart', (req, res, next) => cartController.add(req, res, next))
 
 // Route for creating new snippets should only be available for authenticated users.
 // Code pattern as recommended by Mats.

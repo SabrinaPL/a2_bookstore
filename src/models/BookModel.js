@@ -21,7 +21,7 @@ export class BookModel {
    * @param {number} offset - Number of books to skip.
    * @returns {Promise<Array>} Array of book objects.
    */
-  static async search (filters, limit, offset) {
+  async search (filters, limit, offset) {
     let query = 'SELECT * FROM books WHERE 1=1'
     const params = []
 
@@ -31,10 +31,10 @@ export class BookModel {
       params.push(`%${filters.subject}%`)
     }
 
-    // Author: Search by any part of the name (case-insensitive)
+    // Author: Search by first name prefix (case-insensitive)
     if (filters.author) {
-      query += ' AND LOWER(author) LIKE LOWER(?)'
-      params.push(`%${filters.author}%`)
+      query += " AND LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)"
+      params.push(`${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)
@@ -48,6 +48,7 @@ export class BookModel {
     params.push(limit, offset)
 
     const [books] = await db.query(query, params)
+
     return books
   }
 
@@ -60,7 +61,7 @@ export class BookModel {
    * @param {string} filters.title - Title to search for.
    * @returns {Promise<number>} Total count of matching books.
    */
-  static async count (filters) {
+  async count (filters) {
     let query = 'SELECT COUNT(*) as total FROM books WHERE 1=1'
     const params = []
 
@@ -70,19 +71,21 @@ export class BookModel {
       params.push(`%${filters.subject}%`)
     }
 
-    // Author: Search by any part of the name (case-insensitive)
+    // Author: Search by first name prefix (case-insensitive)
     if (filters.author) {
-      query += ' AND LOWER(author) LIKE LOWER(?)'
-      params.push(`%${filters.author}%`)
+      query += " AND LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)"
+      params.push(`${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)
     if (filters.title) {
       query += ' AND LOWER(title) LIKE LOWER(?)'
+
       params.push(`%${filters.title}%`)
     }
 
-    const [result] = await db.query(query, params)
+    const [result] = await db.execute(query, params)
+
     return result[0].total
   }
 }

@@ -38,10 +38,6 @@
     margin: 0.5rem;
   }
 
-  .filter-snippets-btn:hover {
-    background-color: darkseagreen;
-  }
-
   .password-ux-default {
     visibility: hidden; 
   }
@@ -170,7 +166,7 @@
   }
 
   a:hover {
-    text-decoration: underline red;
+    text-decoration: underline green;
     color: #00120B;
   }
 

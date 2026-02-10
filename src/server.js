@@ -5,10 +5,10 @@ import session from 'express-session'
 import logger from 'morgan'
 import helmet from 'helmet'
 import { sessionOptions } from './config/sessionOptions.js'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { router } from './routes/router.js'
-import { rateLimit } from 'express-rate-limit'
+import { appConfig } from './config/appConfig.js'
+import { paths } from './config/paths.js'
+import { limiter } from './config/rateLimitOptions.js'
 
 try {
   // Connect to MySQL database.
@@ -27,31 +27,17 @@ try {
   // Set various HTTP headers to help protect the application from well-known web vulnerabilities.
   app.use(helmet())
 
-  // Rate limiting middleware for Express apps (code from https://www.npmjs.com/package/express-rate-limit).
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes.
-    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-    standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header.
-    legacyHeaders: false // Disable the `X-RateLimit-*` headers.
-  })
-
   // Apply the rate limiting middleware to login and register routes.
   app.use('/login', limiter)
   app.use('/register', limiter)
-
-  // Get the directory name of this module's path.
-  const directoryFullName = dirname(fileURLToPath(import.meta.url))
-
-  // Set the base URL to use for all relative URLs in a document.
-  const baseURL = process.env.BASE_URL || '/'
 
   // Set up a morgan logger using the dev format for log entries. Record system events.
   app.use(logger('dev'))
 
   // View engine setup.
   app.set('view engine', 'ejs')
-  app.set('views', join(directoryFullName, 'views'))
-  app.set('layout', join(directoryFullName, 'views', 'layouts', 'default'))
+  app.set('views', paths.viewsDir)
+  app.set('layout', paths.layoutsDir)
   app.set('layout extractScripts', true)
   app.set('layout extractStyles', true)
   app.use(expressLayouts)
@@ -61,10 +47,10 @@ try {
   app.use(express.urlencoded({ extended: false }))
 
   // Serve static files.
-  app.use(express.static(join(directoryFullName, '..', 'public')))
+  app.use(express.static(paths.publicDir))
 
   // Setup and use session middleware (https://github.com/expressjs/session)
-  if (process.env.NODE_ENV === 'production') {
+  if (appConfig.isProduction) {
     app.set('trust proxy', 1) // trust first proxy
   }
   // Will handle the session cookie.
@@ -79,14 +65,13 @@ try {
     }
 
     // Pass the base URL to the views.
-    res.locals.baseURL = baseURL
+    res.locals.baseURL = appConfig.baseURL
     // Pass the user to the views.
     res.locals.user = req.session.user || null
 
     next()
   })
 
-  // Register routes.
   app.use('/', router)
 
   // Error handler.
@@ -97,7 +82,7 @@ try {
     if (err.status === 404) {
       res
         .status(404)
-        .sendFile(join(directoryFullName, 'views', 'errors', '404.html'))
+        .sendFile(paths.errors404File)
       return
     }
 
@@ -105,15 +90,15 @@ try {
     if (err.status === 403) {
       res
         .status(403)
-        .sendFile(join(directoryFullName, 'views', 'errors', '403.html'))
+        .sendFile(paths.errors403File)
       return
     }
 
     // 500 Internal Server Error (in production, all other errors send this response).
-    if (process.env.NODE_ENV === 'production') {
+    if (appConfig.isProduction) {
       res
         .status(500)
-        .sendFile(join(directoryFullName, 'views', 'errors', '500.html'))
+        .sendFile(paths.errors500File)
       return
     }
 
@@ -129,7 +114,7 @@ try {
   })
 
   // Starts the HTTP server listening for connections.
-  const server = app.listen(process.env.PORT, () => {
+  const server = app.listen(appConfig.port, () => {
     console.log(`Server running at http://localhost:${server.address().port}`)
     console.log('Press Ctrl-C to terminate...')
   })

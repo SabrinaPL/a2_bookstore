@@ -54,10 +54,10 @@
                 <p><strong>Price:</strong> $<%= book.price %></p>
                 <p><strong>Subject:</strong> <%= book.subject %></p>
                 
-                <form action="./cart/add" method="post" class="add-to-cart-form">
-                    <input type="hidden" name="bookId" value="<%= book.id %>">
-                    <label for="quantity-<%= book.id %>">Quantity:</label>
-                    <input type="number" id="quantity-<%= book.id %>" name="quantity" min="1" value="1">
+                <form action="/books/cart" method="post" class="add-to-cart-form">
+                    <input type="hidden" name="bookId" value="<%= book.isbn %>">
+                    <label for="quantity-<%= book.isbn %>">Quantity:</label>
+                    <input type="number" id="quantity-<%= book.isbn %>" name="quantity" min="1" value="1">
                     <button type="submit" class="crud-btn">Add to Cart</button>
                 </form>
             </div>
