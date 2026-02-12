@@ -27,30 +27,10 @@ router.route('/cart')
   .all(UserController.authenticateUser)
   .get((req, res, next) => cartController.index(req, res, next))
   .post((req, res, next) => cartController.add(req, res, next))
-  .put((req, res, next) => cartController.update(req, res, next))
-  .delete((req, res, next) => cartController.delete(req, res, next))
+  // .put((req, res, next) => cartController.update(req, res, next))
+  // .delete((req, res, next) => cartController.delete(req, res, next))
 
-// Route for creating new snippets should only be available for authenticated users.
-// Code pattern as recommended by Mats.
-// router.route('/create')
-//   // .all(
-//   //   UserController.authenticateUser
-//   // )
-//   .get((req, res, next) => controller.create(req, res, next))
-//   .post((req, res, next) => controller.createPost(req, res, next))
-
-// Route for updating snippets should only be available for authenticated and authorized users.
-// router.route('/:id/update')
-//   // .all(
-//   //   [UserController.authenticateUser, UserController.authorizeUser]
-//   // )
-//   .get((req, res, next) => controller.update(req, res, next))
-//   .post((req, res, next) => controller.updatePost(req, res, next))
-
-// Route for deleting snippets should only be available for authenticated and authorized users.
-// router.route('/:id/delete')
-//   // .all(
-//   //   [UserController.authenticateUser, UserController.authorizeUser]
-//   // )
-//   .get((req, res, next) => controller.delete(req, res, next))
-//   .post((req, res, next) => controller.deletePost(req, res, next))
+router.route('/cart/delete')
+  .all(UserController.authenticateUser)
+  .get((req, res, next) => cartController.delete(req, res, next))
+  .post((req, res, next) => cartController.delete(req, res, next))

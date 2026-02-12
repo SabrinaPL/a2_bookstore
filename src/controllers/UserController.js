@@ -6,7 +6,7 @@
 
 // I want this controller to handle the logic for user registration and login.
 import { UserModel } from '../models/UserModel.js'
-import createHTTPError from 'http-errors'
+// import createHTTPError from 'http-errors'
 import validator from 'validator'
 
 /**
@@ -47,7 +47,7 @@ export class UserController {
     if (!req.body.email || !req.body.password || !req.body.firstName || !req.body.lastName ||
         !req.body.address || !req.body.city || !req.body.zipCode || !req.body.phoneNumber || !req.body.password2) {
       req.session.flash = { type: 'danger', text: 'Please enter all required fields.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     // Sanitize user input to prevent XSS attacks and other security issues.
@@ -63,27 +63,27 @@ export class UserController {
 
     if (!validator.isEmail(email)) {
       req.session.flash = { type: 'danger', text: 'Please enter a valid email address.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     if (!validator.isStrongPassword(password, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
       req.session.flash = { type: 'danger', text: 'Please enter a stronger password. It should be at least 8 characters long and include uppercase letters, lowercase letters, numbers, and symbols.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     if (!validator.isPostalCode(zipCode, 'any')) {
       req.session.flash = { type: 'danger', text: 'Please enter a valid postal code.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     if (!validator.isMobilePhone(phoneNumber, 'any')) {
       req.session.flash = { type: 'danger', text: 'Please enter a valid phone number.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     if (password !== password2) {
       req.session.flash = { type: 'danger', text: 'Passwords do not match.' }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
 
     try {
@@ -92,7 +92,7 @@ export class UserController {
 
       if (existingUser) {
         req.session.flash = { type: 'danger', text: 'Registration failed. Please check your information and try again.' }
-        return res.redirect('./register')
+        return res.redirect(`${this.BASE_URL}users/register`)
       }
 
       // Create the new user
@@ -109,10 +109,10 @@ export class UserController {
 
       req.session.flash = { type: 'success', text: 'Account created successfully.' }
 
-      res.redirect('./login')
+      res.redirect(`${this.BASE_URL}users/login`)
     } catch (error) {
       req.session.flash = { type: 'danger', text: error.message }
-      return res.redirect('./register')
+      return res.redirect(`${this.BASE_URL}users/register`)
     }
   }
 
@@ -137,7 +137,7 @@ export class UserController {
   async createLogin (req, res, next) {
     if (!req.body.email || !req.body.password) {
       req.session.flash = { type: 'danger', text: 'Please enter all required fields.' }
-      return res.redirect('./login')
+      return res.redirect(`${this.BASE_URL}users/login`)
     }
 
     const email = validator.escape(req.body.email)
@@ -154,7 +154,7 @@ export class UserController {
           req.session.flash = { type: 'success', text: 'You are now logged in.' }
           req.session.user = user
 
-          return res.redirect('/books/')
+          return res.redirect(`${this.BASE_URL}books/`)
         })
       } else {
         req.session.flash = { type: 'danger', text: 'You are already logged in.' }
@@ -162,7 +162,7 @@ export class UserController {
       }
     } catch (error) {
       req.session.flash = { type: 'danger', text: error.message }
-      return res.redirect('./login')
+      return res.redirect(`${this.BASE_URL}users/login`)
     }
   }
 
@@ -180,7 +180,7 @@ export class UserController {
         return res.render('error/404')
       } else {
         req.session.destroy(() => {
-          res.redirect('/')
+          res.redirect(`${this.BASE_URL}`)
         })
       }
       next()
@@ -202,7 +202,7 @@ export class UserController {
       if (!req.session.user) {
         req.session.flash = { type: 'danger', text: 'Please log in to continue.' }
 
-        return res.redirect('/users/login')
+        return res.redirect(`${this.BASE_URL}users/login`)
       } else {
         next()
       }
@@ -210,29 +210,4 @@ export class UserController {
       next(error)
     }
   }
-
-  /**
-   * Method for user authorization.
-   *
-   * @param {object} req - Express request object.
-   * @param {object} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   * @returns {*} - Redirects to 403 page if user is not authorized.
-   */
-  // static async authorizeUser (req, res, next) {
-  //   try {
-  //     // Fetch the snippet from the database.
-  //     const snippet = await SnippetModel.findById(req.params.id)
-
-  //     // Check if the user is authorized to update the snippet.
-  //     if (req.session.user && req.session.user._id && snippet.user.toString() === req.session.user._id.toString()) {
-  //       next()
-  //     } else {
-  //       const error = createHTTPError(403)
-  //       throw error
-  //     }
-  //   } catch (error) {
-  //     next(error)
-  //   }
-  // }
 }

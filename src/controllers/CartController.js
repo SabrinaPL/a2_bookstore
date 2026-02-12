@@ -11,6 +11,7 @@ import { CartModel } from '../models/CartModel.js'
  */
 export class CartController {
   #cartModel
+  BASE_URL = process.env.BASE_URL || '/'
 
   /**
    * Initializes the CartController with a new instance of the CartModel.
@@ -20,15 +21,24 @@ export class CartController {
   }
 
   /**
-   * Displays the user's cart (placeholder until a UI is implemented).
+   * Displays the user's cart with all items.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
   async index (req, res, next) {
     try {
-      res.status(200).send('Cart view not implemented yet.')
+      if (!req.session.user) {
+        req.session.flash = { type: 'danger', text: 'You must be logged in to view your cart.' }
+        return res.redirect(`${this.BASE_URL}users/login`)
+      }
+
+      const userId = req.session.user.id
+      const cartItems = await this.#cartModel.getCart(userId)
+
+      res.render('bookStore/cart', { viewData: { cartItems } })
     } catch (error) {
       next(error)
     }
@@ -46,7 +56,7 @@ export class CartController {
     try {
       if (!req.session.user) {
         req.session.flash = { type: 'danger', text: 'You must be logged in to add items to your cart.' }
-        return res.redirect('/users/login')
+        return res.redirect(`${this.BASE_URL}users/login`)
       }
 
       const { bookId, quantity } = req.body
@@ -59,19 +69,58 @@ export class CartController {
 
       if (!userId) {
         req.session.flash = { type: 'danger', text: 'Your session expired. Please log in again.' }
-        return res.redirect('/users/login')
+        return res.redirect(`${this.BASE_URL}users/login`)
       }
 
       if (!bookId || Number.isNaN(quantityAsInt) || quantityAsInt < 1) {
         req.session.flash = { type: 'danger', text: 'Please choose a valid book and quantity.' }
-        return res.redirect('/books')
+        return res.redirect(`${this.BASE_URL}books`)
       }
 
       await this.#cartModel.addToCart(userId, bookId, quantityAsInt)
 
       req.session.flash = { type: 'success', text: 'The book was added to your cart.' }
 
-      res.redirect('/books')
+      res.redirect(`${this.BASE_URL}books`)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Deletes a specified quantity of a book from the user's cart.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   */
+  async delete (req, res, next) {
+    try {
+      if (!req.session.user) {
+        req.session.flash = { type: 'danger', text: 'You must be logged in to modify your cart.' }
+        return res.redirect(`${this.BASE_URL}users/login`)
+      }
+
+      const { bookId, quantity } = req.body
+      const userId = req.session.user?.id
+      const quantityAsInt = parseInt(quantity, 10)
+
+      if (!userId) {
+        req.session.flash = { type: 'danger', text: 'Your session expired. Please log in again.' }
+        return res.redirect(`${this.BASE_URL}cart`)
+      }
+
+      if (!bookId || Number.isNaN(quantityAsInt) || quantityAsInt < 1) {
+        req.session.flash = { type: 'danger', text: 'Invalid quantity specified.' }
+        return res.redirect(`${this.BASE_URL}cart`)
+      }
+
+      await this.#cartModel.deleteFromCart(userId, bookId, quantityAsInt)
+
+      req.session.flash = { type: 'success', text: 'Item removed from your cart.' }
+
+      res.redirect(`${this.BASE_URL}cart`)
     } catch (error) {
       next(error)
     }
