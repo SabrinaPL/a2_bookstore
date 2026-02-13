@@ -19,17 +19,21 @@ export class CartModel {
    * @returns {Promise} - A promise that resolves when the book is added or updated in the cart.
    */
   async addToCart (userId, bookId, quantity) {
-    const [rows] = await db.execute('SELECT * FROM cart WHERE userid = ? AND isbn = ?', [userId, bookId])
+    try {
+      const [rows] = await db.execute('SELECT * FROM cart WHERE userid = ? AND isbn = ?', [userId, bookId])
 
-    if (rows.length > 0) {
-      // If the book is already in the cart, update the quantity
-      const newQuantity = rows[0].qty + quantity
+      if (rows.length > 0) {
+        // If the book is already in the cart, update the quantity
+        const newQuantity = rows[0].qty + quantity
 
-      return this.updateCart(userId, bookId, newQuantity)
-    } else {
-      const [result] = await db.execute('INSERT INTO cart (userid, isbn, qty) VALUES (?, ?, ?)', [userId, bookId, quantity])
+        return this.updateCart(userId, bookId, newQuantity)
+      } else {
+        const [result] = await db.execute('INSERT INTO cart (userid, isbn, qty) VALUES (?, ?, ?)', [userId, bookId, quantity])
 
-      return result
+        return result
+      }
+    } catch (error) {
+      throw new Error(`Database error while adding to cart: ${error.message}`)
     }
   }
 
@@ -40,14 +44,19 @@ export class CartModel {
    * @returns {Promise<Array>} - A promise that resolves to an array of cart items with book details.
    */
   async getCart (userId) {
-    const [cartItems] = await db.execute(
-      `SELECT cart.userid, cart.isbn, cart.qty, books.title, books.price
-       FROM cart 
-       JOIN books ON cart.isbn = books.isbn
-       WHERE cart.userid = ?`,
-      [userId]
-    )
-    return cartItems
+    try {
+      const [cartItems] = await db.execute(
+        `SELECT cart.userid, cart.isbn, cart.qty, books.title, books.price
+         FROM cart 
+         JOIN books ON cart.isbn = books.isbn
+         WHERE cart.userid = ?`,
+        [userId]
+      )
+
+      return cartItems
+    } catch (error) {
+      throw new Error(`Database error while retrieving cart: ${error.message}`)
+    }
   }
 
   /**
@@ -59,11 +68,16 @@ export class CartModel {
    * @returns {Promise} - A promise that resolves when the cart is updated.
    */
   async updateCart (userId, bookId, quantity) {
-    const [result] = await db.execute(
-      'UPDATE cart SET qty = ? WHERE userid = ? AND isbn = ?',
-      [quantity, userId, bookId]
-    )
-    return result
+    try {
+      const [result] = await db.execute(
+        'UPDATE cart SET qty = ? WHERE userid = ? AND isbn = ?',
+        [quantity, userId, bookId]
+      )
+
+      return result
+    } catch (error) {
+      throw new Error(`Database error while updating cart: ${error.message}`)
+    }
   }
 
   /**
@@ -74,11 +88,16 @@ export class CartModel {
    * @returns {Promise} - A promise that resolves when the book is removed from the cart.
    */
   async removeFromCart (userId, bookId) {
-    const [result] = await db.execute(
-      'DELETE FROM cart WHERE userid = ? AND isbn = ?',
-      [userId, bookId]
-    )
-    return result
+    try {
+      const [result] = await db.execute(
+        'DELETE FROM cart WHERE userid = ? AND isbn = ?',
+        [userId, bookId]
+      )
+
+      return result
+    } catch (error) {
+      throw new Error(`Database error while removing from cart: ${error.message}`)
+    }
   }
 
   /**
@@ -92,24 +111,33 @@ export class CartModel {
    * @returns {Promise} - A promise that resolves when the operation is complete.
    */
   async deleteFromCart (userId, bookId, quantity) {
-    const [rows] = await db.execute(
-      'SELECT qty FROM cart WHERE userid = ? AND isbn = ?',
-      [userId, bookId]
-    )
+    try {
+      const [rows] = await db.execute(
+        'SELECT qty FROM cart WHERE userid = ? AND isbn = ?',
+        [userId, bookId]
+      )
 
-    if (rows.length === 0) {
-      throw new Error('Item not found in cart')
-    }
+      if (rows.length === 0) {
+        throw new Error('Item not found in cart')
+      }
 
-    const currentQuantity = rows[0].qty
+      const currentQuantity = rows[0].qty
 
-    if (quantity >= currentQuantity) {
-      // Remove the entire item if quantity to delete is >= current quantity
-      return this.removeFromCart(userId, bookId)
-    } else {
-      // Update the quantity by subtracting the specified amount
-      const newQuantity = currentQuantity - quantity
-      return this.updateCart(userId, bookId, newQuantity)
+      if (quantity >= currentQuantity) {
+        // Remove the entire item if quantity to delete is >= current quantity
+
+        return this.removeFromCart(userId, bookId)
+      } else {
+        // Update the quantity
+        const newQuantity = currentQuantity - quantity
+
+        return this.updateCart(userId, bookId, newQuantity)
+      }
+    } catch (error) {
+      if (error.message === 'Item not found in cart') {
+        throw error
+      }
+      throw new Error(`Database error while deleting from cart: ${error.message}`)
     }
   }
 
@@ -120,10 +148,14 @@ export class CartModel {
    * @returns {Promise} - A promise that resolves when the cart is cleared.
    */
   async clearCart (userId) {
-    const [result] = await db.execute(
-      'DELETE FROM cart WHERE userid = ?',
-      [userId]
-    )
-    return result
+    try {
+      const [result] = await db.execute(
+        'DELETE FROM cart WHERE userid = ?',
+        [userId]
+      )
+      return result
+    } catch (error) {
+      throw new Error(`Database error while clearing cart: ${error.message}`)
+    }
   }
 }

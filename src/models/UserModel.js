@@ -12,14 +12,37 @@ import bcrypt from 'bcrypt'
  */
 export class UserModel {
   /**
+   * Find a user by ID.
+   *
+   * @param {number} userId - The user ID to search for.
+   * @returns {Promise<object|null>} The user object or null if not found.
+   * @throws {Error} If database query fails.
+   */
+  static async findById (userId) {
+    try {
+      const [members] = await db.query('SELECT * FROM members WHERE userid = ?', [userId])
+
+      return members.length > 0 ? members[0] : null
+    } catch (error) {
+      throw new Error(`Database error while finding user by ID: ${error.message}`)
+    }
+  }
+
+  /**
    * Find a user by email.
    *
    * @param {string} email - The email to search for.
    * @returns {Promise<object|null>} The user object or null if not found.
+   * @throws {Error} If database query fails.
    */
   static async findByEmail (email) {
-    const [members] = await db.query('SELECT * FROM members WHERE email = ?', [email])
-    return members.length > 0 ? members[0] : null
+    try {
+      const [members] = await db.query('SELECT * FROM members WHERE email = ?', [email])
+
+      return members.length > 0 ? members[0] : null
+    } catch (error) {
+      throw new Error(`Database error while finding user by email: ${error.message}`)
+    }
   }
 
   /**
@@ -37,18 +60,26 @@ export class UserModel {
    * @returns {Promise<number>} The ID of the newly created user.
    */
   static async create (userData) {
-    const { email, password, firstName, lastName, address, city, zipCode, phoneNumber } = userData
+    try {
+      const { email, password, firstName, lastName, address, city, zipCode, phoneNumber } = userData
 
-    // Hash and salt the password before storing
-    const hashedPassword = await bcrypt.hash(password, 10)
+      // Hash and salt the password before storing
+      const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Insert the new member into the database
-    const [result] = await db.query(
-      'INSERT INTO members (email, password, fname, lname, address, city, zip, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [email, hashedPassword, firstName, lastName, address, city, zipCode, phoneNumber]
-    )
+      // Insert the new member into the database
+      const [result] = await db.query(
+        'INSERT INTO members (email, password, fname, lname, address, city, zip, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [email, hashedPassword, firstName, lastName, address, city, zipCode, phoneNumber]
+      )
 
-    return result.insertId
+      return result.insertId
+    } catch (error) {
+      // Check for duplicate email error
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new Error('Email address already exists.')
+      }
+      throw new Error(`Database error while creating user: ${error.message}`)
+    }
   }
 
   /**
@@ -60,22 +91,29 @@ export class UserModel {
    * @throws {Error} If authentication fails.
    */
   static async authenticate (email, password) {
-    const user = await this.findByEmail(email)
+    try {
+      const user = await this.findByEmail(email)
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new Error('Invalid credentials.')
-    }
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new Error('Invalid credentials.')
+      }
 
-    // Return user object without password
-    return {
-      id: user.userid,
-      email: user.email,
-      firstName: user.fname,
-      lastName: user.lname,
-      address: user.address,
-      city: user.city,
-      zipCode: user.zip,
-      phoneNumber: user.phone
+      // Return user object without password
+      return {
+        id: user.userid,
+        email: user.email,
+        firstName: user.fname,
+        lastName: user.lname,
+        address: user.address,
+        city: user.city,
+        zipCode: user.zip,
+        phoneNumber: user.phone
+      }
+    } catch (error) {
+      if (error.message === 'Invalid credentials.') {
+        throw error
+      }
+      throw new Error(`Database error during authentication: ${error.message}`)
     }
   }
 }

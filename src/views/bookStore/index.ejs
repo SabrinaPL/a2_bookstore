@@ -56,6 +56,7 @@
                 
                 <% if (user) { %>
                     <form action="/books/cart" method="post" class="add-to-cart-form">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="hidden" name="bookId" value="<%= book.isbn %>">
                         <label for="quantity-<%= book.isbn %>">Quantity:</label>
                         <input type="number" id="quantity-<%= book.isbn %>" name="quantity" min="1" value="1">

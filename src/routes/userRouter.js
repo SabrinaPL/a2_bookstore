@@ -34,7 +34,6 @@ router.get('/login', (req, res, next) => {
 
 router.post('/login', (req, res, next) => { controller.createLogin(req, res, next) })
 
-// Route for logging out.
 router.route('/logout')
   .all(
     UserController.authenticateUser

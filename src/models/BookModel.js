@@ -47,9 +47,13 @@ export class BookModel {
     query += ' LIMIT ? OFFSET ?'
     params.push(limit, offset)
 
-    const [books] = await db.query(query, params)
+    try {
+      const [books] = await db.query(query, params)
 
-    return books
+      return books
+    } catch (error) {
+      throw new Error(`Database error while searching books: ${error.message}`)
+    }
   }
 
   /**
@@ -84,8 +88,12 @@ export class BookModel {
       params.push(`%${filters.title}%`)
     }
 
-    const [result] = await db.execute(query, params)
+    try {
+      const [result] = await db.execute(query, params)
 
-    return result[0].total
+      return result[0].total
+    } catch (error) {
+      throw new Error(`Database error while counting books: ${error.message}`)
+    }
   }
 }

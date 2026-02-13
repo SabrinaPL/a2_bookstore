@@ -4,6 +4,7 @@ import expressLayouts from 'express-ejs-layouts'
 import session from 'express-session'
 import logger from 'morgan'
 import helmet from 'helmet'
+import csrf from 'csurf'
 import { sessionOptions } from './config/sessionOptions.js'
 import { router } from './routes/router.js'
 import { appConfig } from './config/appConfig.js'
@@ -56,6 +57,10 @@ try {
   // Will handle the session cookie.
   app.use(session(sessionOptions))
 
+  // CSRF protection middleware (use session storage).
+  const csrfProtection = csrf({ cookie: false })
+  app.use(csrfProtection)
+
   // Middleware to be executed before the routes.
   app.use((req, res, next) => {
     // Flash messages - survives only a round trip.
@@ -68,6 +73,8 @@ try {
     res.locals.baseURL = appConfig.baseURL
     // Pass the user to the views.
     res.locals.user = req.session.user || null
+    // Pass the CSRF token to all views.
+    res.locals.csrfToken = req.csrfToken()
 
     next()
   })
@@ -77,6 +84,15 @@ try {
   // Error handler.
   app.use((err, req, res, next) => {
     console.error(err)
+
+    // Handle CSRF errors
+    if (err.code === 'EBADCSRFTOKEN') {
+      res.status(403)
+      res.render('errors/error', {
+        error: { message: 'Invalid or expired CSRF token. Please try again.' }
+      })
+      return
+    }
 
     // 404 Not Found.
     if (err.status === 404) {

@@ -9,7 +9,6 @@ import express from 'express'
 import { BookController } from '../controllers/BookController.js'
 import { CartController } from '../controllers/CartController.js'
 import { UserController } from '../controllers/UserController.js'
-// import { OrderController } from '../controllers/OrderController.js'
 
 export const router = express.Router()
 
@@ -33,5 +32,3 @@ router.route('/cart/update')
 router.get('/cart/clear', UserController.authenticateUser, (req, res, next) => cartController.clearCart(req, res, next))
 
 router.get('/checkout', UserController.authenticateUser, (req, res, next) => cartController.checkout(req, res, next))
-
-// TODO: add routes for listing user order and order details at checkout, and for confirming the order and showing the order confirmation page

@@ -5,19 +5,23 @@
  */
 
 import { CartModel } from '../models/CartModel.js'
+import { OrderModel } from '../models/OrderModel.js'
+import { UserModel } from '../models/UserModel.js'
 
 /**
  * CartController class to manage cart operations.
  */
 export class CartController {
   #cartModel
+  #orderModel
   BASE_URL = process.env.BASE_URL || '/'
 
   /**
-   * Initializes the CartController with a new instance of the CartModel.
+   * Initializes the CartController with a new instance of the CartModel and OrderModel.
    */
   constructor () {
     this.#cartModel = new CartModel()
+    this.#orderModel = new OrderModel()
   }
 
   /**
@@ -135,7 +139,7 @@ export class CartController {
   }
 
   /**
-   * Displays the checkout page with order details.
+   * Displays the checkout page and creates an order with order details.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -146,6 +150,7 @@ export class CartController {
     try {
       if (!req.session.user) {
         req.session.flash = { type: 'danger', text: 'You must be logged in to checkout.' }
+
         return res.redirect(`${this.BASE_URL}users/login`)
       }
 
@@ -154,15 +159,50 @@ export class CartController {
 
       if (!cartItems || cartItems.length === 0) {
         req.session.flash = { type: 'warning', text: 'Your cart is empty.' }
+
         return res.redirect(`${this.BASE_URL}cart`)
       }
 
-      // Prepare order details with dummy data for now
+      // Fetch user data from database for accurate shipping address
+      const user = await UserModel.findById(userId)
+
+      if (!user) {
+        req.session.flash = { type: 'danger', text: 'User account not found. Please update your profile.' }
+
+        return res.redirect(`${this.BASE_URL}users/profile`)
+      }
+
+      // Create the order with shipping details from user's registered address
+      const shippingAddress = {
+        shipAddress: user.address || 'N/A',
+        shipCity: user.city || 'N/A',
+        shipZip: user.zip || null
+      }
+
+      const orderNo = await this.#orderModel.createOrder(userId, shippingAddress)
+
+      // Create order details for each book in the cart
+      await this.#orderModel.createOrderDetails(orderNo, cartItems)
+
+      // Clear the user's cart after successful order
+      await this.#cartModel.clearCart(userId)
+
+      // Get the complete order details to display
+      const orderDetails = await this.#orderModel.getOrderDetails(orderNo)
+
+      // Calculate delivery date (one week from order date)
+      const orderDate = new Date(orderDetails.order.created)
+      const deliveryDate = new Date(orderDate)
+      deliveryDate.setDate(deliveryDate.getDate() + 7)
+
+      // Prepare order data for the view
       const orderData = {
-        orderNo: Math.floor(Math.random() * 100000) + 1000,
-        customerName: req.session.user.firstName + ' ' + req.session.user.lastName,
-        customerAddress: req.session.user.address || 'Address not provided',
-        books: cartItems
+        orderNo: orderDetails.order.ono,
+        orderDate: orderDate.toLocaleDateString(),
+        deliveryDate: deliveryDate.toLocaleDateString(),
+        customerName: `${orderDetails.order.fname} ${orderDetails.order.lname}`,
+        customerAddress: `${orderDetails.order.shipAddress}, ${orderDetails.order.shipCity}, ${orderDetails.order.shipZip}`,
+        books: orderDetails.books
       }
 
       res.render('bookStore/orderDetails', { viewData: { order: orderData } })

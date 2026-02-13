@@ -5,6 +5,10 @@
     <!-- Invoice Header -->
     <div class="invoice-header">
       <h2>Invoice for Order no. <%= viewData.order.orderNo %></h2>
+      <% if (viewData.order.orderDate) { %>
+        <p><strong>Order Date:</strong> <%= viewData.order.orderDate %></p>
+        <p><strong>Delivery Date:</strong> <%= viewData.order.deliveryDate %></p>
+      <% } %>
     </div>
 
     <!-- Shipping Address -->
@@ -58,7 +62,6 @@
     <!-- Action Buttons -->
     <div class="order-actions" style="margin-top: 20px;">
       <a href="<%= baseURL %>books" class="btn btn-primary">Continue Shopping</a>
-      <button class="btn btn-success">Confirm Order</button>
     </div>
   </div>
 
