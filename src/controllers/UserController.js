@@ -4,9 +4,7 @@
  * @author Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
  */
 
-// I want this controller to handle the logic for user registration and login.
 import { UserModel } from '../models/UserModel.js'
-// import createHTTPError from 'http-errors'
 import validator from 'validator'
 
 /**
@@ -150,7 +148,7 @@ export class UserController {
       }
 
       const email = validator.escape(req.body.email)
-      const password = req.body.password // Don't escape password before comparing
+      const password = req.body.password
 
       // Check if the user is already logged in to the session.
       if (!req.session.user) {

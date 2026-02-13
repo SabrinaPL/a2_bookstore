@@ -22,12 +22,12 @@ export class BookModel {
    * @returns {Promise<Array>} Array of book objects.
    */
   async search (filters, limit, offset) {
-    let query = 'SELECT * FROM books WHERE 1=1'
+    let query = 'SELECT * FROM books'
     const params = []
 
     // Add filters to query if provided
     if (filters.subject) {
-      query += ' AND LOWER(subject) LIKE LOWER(?)'
+      query += ' WHERE LOWER(subject) LIKE LOWER(?)'
       params.push(`%${filters.subject}%`)
     }
 
@@ -66,12 +66,12 @@ export class BookModel {
    * @returns {Promise<number>} Total count of matching books.
    */
   async count (filters) {
-    let query = 'SELECT COUNT(*) as total FROM books WHERE 1=1'
+    let query = 'SELECT COUNT(*) as total FROM books'
     const params = []
 
     // Add filters to query if provided
     if (filters.subject) {
-      query += ' AND LOWER(subject) LIKE LOWER(?)'
+      query += ' WHERE LOWER(subject) LIKE LOWER(?)'
       params.push(`%${filters.subject}%`)
     }
 

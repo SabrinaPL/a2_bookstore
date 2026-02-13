@@ -4,7 +4,6 @@
  * @author Sabrina Prichard-Lybeck <sp223kz@student.lnu.se>
  */
 
-// src/routes/bookStoreRouter.js
 import express from 'express'
 import { BookController } from '../controllers/BookController.js'
 import { CartController } from '../controllers/CartController.js'
