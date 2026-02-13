@@ -112,12 +112,18 @@ export class CartModel {
       return this.updateCart(userId, bookId, newQuantity)
     }
   }
+
+  /**
+   * Method to clear all items from a user's cart.
+   *
+   * @param {*} userId - The ID of the user.
+   * @returns {Promise} - A promise that resolves when the cart is cleared.
+   */
+  async clearCart (userId) {
+    const [result] = await db.execute(
+      'DELETE FROM cart WHERE userid = ?',
+      [userId]
+    )
+    return result
+  }
 }
-
-// TODO: add logic for adding books to the cart and viewing the cart
-
-// TODO: add books to cart for logged in user
-// TODO: view cart for logged in user
-// TODO: update cart for logged in user
-// TODO: remove books from cart for logged in user
-// TODO: add error handling for cart operations

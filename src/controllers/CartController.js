@@ -88,17 +88,19 @@ export class CartController {
   }
 
   /**
-   * Deletes a specified quantity of a book from the user's cart.
+   * Updates or deletes a book from the user's cart.
+   * If quantity is 0, the item is deleted. Otherwise, the quantity is updated.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
-  async delete (req, res, next) {
+  async update (req, res, next) {
     try {
       if (!req.session.user) {
         req.session.flash = { type: 'danger', text: 'You must be logged in to modify your cart.' }
+
         return res.redirect(`${this.BASE_URL}users/login`)
       }
 
@@ -111,14 +113,85 @@ export class CartController {
         return res.redirect(`${this.BASE_URL}cart`)
       }
 
-      if (!bookId || Number.isNaN(quantityAsInt) || quantityAsInt < 1) {
+      if (!bookId || Number.isNaN(quantityAsInt) || quantityAsInt < 0) {
         req.session.flash = { type: 'danger', text: 'Invalid quantity specified.' }
+
         return res.redirect(`${this.BASE_URL}cart`)
       }
 
-      await this.#cartModel.deleteFromCart(userId, bookId, quantityAsInt)
+      // If quantity is 0, delete the item; otherwise update to the new quantity
+      if (quantityAsInt === 0) {
+        await this.#cartModel.removeFromCart(userId, bookId)
+        req.session.flash = { type: 'success', text: 'Item removed from your cart.' }
+      } else {
+        await this.#cartModel.updateCart(userId, bookId, quantityAsInt)
+        req.session.flash = { type: 'success', text: 'Cart updated successfully.' }
+      }
 
-      req.session.flash = { type: 'success', text: 'Item removed from your cart.' }
+      res.redirect(`${this.BASE_URL}cart`)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Displays the checkout page with order details.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   */
+  async checkout (req, res, next) {
+    try {
+      if (!req.session.user) {
+        req.session.flash = { type: 'danger', text: 'You must be logged in to checkout.' }
+        return res.redirect(`${this.BASE_URL}users/login`)
+      }
+
+      const userId = req.session.user.id
+      const cartItems = await this.#cartModel.getCart(userId)
+
+      if (!cartItems || cartItems.length === 0) {
+        req.session.flash = { type: 'warning', text: 'Your cart is empty.' }
+        return res.redirect(`${this.BASE_URL}cart`)
+      }
+
+      // Prepare order details with dummy data for now
+      const orderData = {
+        orderNo: Math.floor(Math.random() * 100000) + 1000,
+        customerName: req.session.user.firstName + ' ' + req.session.user.lastName,
+        customerAddress: req.session.user.address || 'Address not provided',
+        books: cartItems
+      }
+
+      res.render('bookStore/orderDetails', { viewData: { order: orderData } })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Clears all items from the user's cart.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   */
+  async clearCart (req, res, next) {
+    try {
+      if (!req.session.user) {
+        req.session.flash = { type: 'danger', text: 'You must be logged in to clear your cart.' }
+
+        return res.redirect(`${this.BASE_URL}users/login`)
+      }
+
+      const userId = req.session.user.id
+
+      await this.#cartModel.clearCart(userId)
+
+      req.session.flash = { type: 'success', text: 'Your cart has been cleared.' }
 
       res.redirect(`${this.BASE_URL}cart`)
     } catch (error) {

@@ -13,6 +13,8 @@ import validator from 'validator'
  * Encapsulates a controller.
  */
 export class UserController {
+  BASE_URL = process.env.BASE_URL || '/'
+
   /**
    * Renders a view and sends the rendered HTML string as an HTTP response.
    * index GET.
