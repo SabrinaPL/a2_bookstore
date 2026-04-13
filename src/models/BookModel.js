@@ -26,21 +26,27 @@ export class BookModel {
     const params = []
 
     // Add filters to query if provided
+    const conditions = []
+
     if (filters.subject) {
-      query += ' WHERE LOWER(subject) LIKE LOWER(?)'
+      conditions.push('LOWER(subject) LIKE LOWER(?)')
       params.push(`%${filters.subject}%`)
     }
 
     // Author: Search by first name prefix (case-insensitive)
     if (filters.author) {
-      query += " AND LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)"
+      conditions.push("LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)")
       params.push(`${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)
     if (filters.title) {
-      query += ' AND LOWER(title) LIKE LOWER(?)'
+      conditions.push('LOWER(title) LIKE LOWER(?)')
       params.push(`%${filters.title}%`)
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ')
     }
 
     // Add LIMIT and OFFSET for pagination
@@ -70,22 +76,27 @@ export class BookModel {
     const params = []
 
     // Add filters to query if provided
+    const conditions = []
+
     if (filters.subject) {
-      query += ' WHERE LOWER(subject) LIKE LOWER(?)'
+      conditions.push('LOWER(subject) LIKE LOWER(?)')
       params.push(`%${filters.subject}%`)
     }
 
     // Author: Search by first name prefix (case-insensitive)
     if (filters.author) {
-      query += " AND LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)"
+      conditions.push("LOWER(SUBSTRING_INDEX(author, ' ', 1)) LIKE LOWER(?)")
       params.push(`${filters.author}%`)
     }
 
     // Title: Search for titles containing the entered word (case-insensitive)
     if (filters.title) {
-      query += ' AND LOWER(title) LIKE LOWER(?)'
-
+      conditions.push('LOWER(title) LIKE LOWER(?)')
       params.push(`%${filters.title}%`)
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ')
     }
 
     try {
